@@ -20,11 +20,6 @@ class TaskListTableViewController: UITableViewController {
         tableView.reloadData()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         return TaskController.sharedController.incompleteTasks.count
@@ -74,8 +69,7 @@ extension TaskListTableViewController: ButtonTableViewCellDelegate {
         let indexPath = tableView.indexPathForCell(sender)!
         
         let task = TaskController.sharedController.incompleteTasks[indexPath.row]
-        task.isComplete = !task.isComplete.boolValue
-        TaskController.sharedController.saveToPersistentStorage()
+        TaskController.sharedController.isCompleteValueToggle(task)
         
         tableView.reloadData()
     }

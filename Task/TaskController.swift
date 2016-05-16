@@ -27,16 +27,7 @@ class TaskController {
         return [sampleTask1, sampleTask2, sampleTask3, sampleTask4]
     }
     
-    var tasks:[Task] {
-        
-        let request = NSFetchRequest(entityName: "Task")
-        
-        do {
-            return try Stack.sharedStack.managedObjectContext.executeFetchRequest(request) as! [Task]
-        } catch {
-            return []
-        }
-    }
+    var tasks:[Task] = []
     
     var completedTasks:[Task] {
         
@@ -48,15 +39,33 @@ class TaskController {
         return tasks.filter({!$0.isComplete.boolValue})
     }
     
-    func addTask(task: Task) {
-        
+    init() {
+        self.tasks = fetchTasks()
+    }
+    
+    func addTask(name: String, notes: String?, due: NSDate?) {
+        let _ = Task(name: name, notes: notes, due: due)
         saveToPersistentStorage()
+        tasks = fetchTasks()
+    }
+    
+    func updateTask(task: Task, name: String, notes: String?, due: NSDate?) {
+        task.name = name
+        task.notes = notes
+        task.due = due
+        saveToPersistentStorage()
+        tasks = fetchTasks()
     }
     
     func removeTask(task: Task) {
         
         task.managedObjectContext?.deleteObject(task)
         saveToPersistentStorage()
+        tasks = fetchTasks()
+    }
+    
+    func isCompleteValueToggle(task: Task) {
+        task.isComplete = !task.isComplete.boolValue
     }
     
     // MARK: - Persistence
@@ -70,11 +79,10 @@ class TaskController {
         }
     }
     
-    func filePath(key: String) -> String {
-        let directorySearchResults = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory,NSSearchPathDomainMask.AllDomainsMask, true)
-        let documentsPath: AnyObject = directorySearchResults[0]
-        let entriesPath = documentsPath.stringByAppendingString("/\(key).plist")
+    func fetchTasks() -> [Task] {
+        let request = NSFetchRequest(entityName: "Task")
         
-        return entriesPath
+        let tasks = (try? Stack.sharedStack.managedObjectContext.executeFetchRequest(request)) as? [Task]
+        return tasks ?? []
     }
 }

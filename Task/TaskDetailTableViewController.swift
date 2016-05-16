@@ -53,18 +53,14 @@ class TaskDetailTableViewController: UITableViewController {
 
     func updateTask() {
         
-        let name = taskNameTextField.text!
+        guard let name = taskNameTextField.text else {return}
         let due = dueDateValue
         let notes = taskNotesTextView.text
         
         if let task = self.task {
-            task.name = name
-            task.due = due
-            task.notes = notes
+            TaskController.sharedController.updateTask(task, name: name, notes: notes, due: due)
         } else {
-            
-            let newTask = Task(name: name, notes: notes, due: due)
-            TaskController.sharedController.addTask(newTask)
+            TaskController.sharedController.addTask(name, notes: notes, due: due)
         }
     }
     
