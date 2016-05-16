@@ -107,10 +107,11 @@ There are many ways to add mock data to model object controllers. We will do so 
 1. Create a ```mockTasks:[Task]``` computed property that holds a number of staged Task objects
 2. Initialize a small number of Task objects with varying properties (include at least one 'isComplete' task and one task with a due date)
 
-Generally, when you want mock data, set self.tasks to self.mockTasks in the initializer. Remove it when you no longer want mock data.
+Generally, when you want mock data, set self.tasks to self.mockTasks in the initializer. Remove it when you no longer want mock data. In this case, we will be setting our mock tasks through our ```fetchTasks() -> [Task]``` function since that is what we will be doing when using real data.
 
-1. In your controller's initializer, set your tasks array equal to your mock tasks.
+1. In your controller's initializer, set your tasks array equal to the return from your ```fetchTasks() -> [Task]``` function.
     * note: If you have not added an initializer, add one.
+2. In your ```fetchTasks() -> [Task]``` function return your mock tasks computed property.
 
 At this point, you can go and wire up your list table view to display the complete or incomplete tasks to check your progress on Part One. We will focus on the list and detail views in Part Two.
 
