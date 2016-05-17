@@ -43,6 +43,7 @@ Set up a basic List-Detail view hierarchy using a UITableViewController for a Ta
 5. Add a UITableViewController scene that will be used to add and view tasks
     * note: We will use a static table view for our Task Detail view, static table views should be used sparingly, but they can be useful for a table view that will never change, such as a basic form.
 6. Add a segue from the Add button from the first scene to the second scene
+7. Add a segue from the prototype cell in the first scene to the second scene
 7. Add a class file ```TaskDetailTableViewController.swift``` and assign the scene in the Storyboard
 
 
@@ -147,6 +148,7 @@ Look at the task detail screenshot or in the solution code. Set up the Storyboar
 4. Change the name of the second section to 'Due', and add a UITextField to the cell with placeholder text
 5. Change the name of the third section to 'Notes', and add a text view to the cell
 6. Resize the UI elements and add automatic constraints so that they fill each cell
+7. Add an IBAction from the "Save" button. This action should save a new task if the ```task``` property is nil, and update the existing task otherwise.
 
 Your Detail View should follow the 'updateWith' pattern for updating the view elements with the details of a model object. 
 
@@ -184,6 +186,8 @@ UIDatePicker is used to capture date and time information from a user. By settin
     * note: Drag a UIDatePicker object to the outline area of the Storyboard, Interface Builder will drop it directly beneath the First Responder object
 2. Set the UIDatePicker to Date mode
 3. Create an IBOutlet from the UIDatePicker supplementary view to the class file named ```dueDatePicker```
+3. In ```viewDidLoad```, set the date picker as the text field's input view
+    * hint: ```textField.inputView = dueDatePicker```
 4. Create an IBAction from the UIDatePicker supplementary view to the class file named ```datePickerValueChanged```
     * note: Choose UIDatePicker as the sender type so that you do not need to cast the object to get the date off of it
 5. Create an optional due date placeholder property ```dueDateValue```
@@ -198,9 +202,9 @@ Dismissing the keyboard can be done in many ways. You can use the ```textFieldSh
 
 You will add two separate segues from the List View to the Detail View. The segue from the plus button will tell the ```TaskDetailTableViewController``` that it should create a new task. The segue from a selected cell will tell the ```TaskDetailTableViewController``` that it should display a previously created task, and save any changes to the same.
 
-1. Add a 'show' segue from the Add button to the detail scene and give the segue an identifier
+1. Add a 'show' segue from the Add button to the detail scene and give the segue an identifier if you haven't already
     * note: Consider that this segue will be used to add a task when naming the identifier
-2. Add a 'show' segue from the table view cell to the TaskDetailViewController scene and give the segue an identifier
+2. Add a 'show' segue from the table view cell to the TaskDetailViewController scene and give the segue an identifier if you haven't already
     * note: Consider that this segue will be used to edit a task when naming the identifier
 3. Add a ```prepareForSegue``` function to the TaskListTableViewController
 4. Implement the ```prepareForSegue``` function. Check the identifier of the segue parameter, if the identifier is 'toAddTask' then we will present the destination view controller without passing a task.
@@ -265,6 +269,64 @@ Write a protocol for the ```ButtonTableViewCell``` to delegate handling a button
 * Update the settings for the checkbox images to [inherit the tint color](http://stackoverflow.com/questions/19829356/color-tint-uibutton-image) of the button
 * Refactor the 'incompleteTasks' and 'completedTasks' arrays to use an NSFetchRequest with an NSPredicate to return the correct results
 * Implement a Fetched Results Controller for the Table View DataSource
+
+## Part Two - NSFetchedResultsController
+
+### Prepare Project to use NSFetchedResultsController
+
+An NSFetchedResultsController has properties that allow you to access fetched objects, thereby replacing the tasks array that is currently on the TaskController. It also takes the place of the fetchTasks function. Consequently, you will delete those items from the TaskController, and remove the TaskListTableViewController entirely and start from scratch.
+
+1. Delete your tasks array and the computed properties for incomplete and complete tasks.
+2. Delete your fetchTasks function and all references to it.
+3. Delete your entire file ```TaskListsTableVieWController.swift```.
+    * note: When prompted and asked whether or not to remove reference or move to trash, choose move to trash.
+
+### Add an NSFetchedResultsController to TaskController
+
+NSFetchedResultsController is an API that allows you to easily sync a table view with information stored in CoreData. In order to use it, you must initialize it with an NSFetchRequest, a Managed Object Context, the name of the variable you want your sections divided by, and an optional cache name. In our case, we do not need a cache, so we will leave it as nil.
+
+1. Add a constant to your ```TaskController``` called fetchedResultsController that is of type ```NSFetchedResultsController```. 
+2. You should get a compiler error saying you need to initialize this property. In your initializer, create a fetch request similar to the one you had before, but with a sort descriptor for ```isComplete``` and a sort descriptor for ```due```, in that order. This ensures that the tasks will be sorted by whether or not they are complete first, and then by their due date.
+3. Initialize your fetchedResultsController using your fetch request, ```Stack.sharedStack.managedObjectContext```, and the key by which you want to divide sections (we want a section for incomplete tasks and a section for complete tasks).
+
+### Perform Fetch Using NSFetchedResultsController
+
+An NSFetchedResultsController will keep you updated of any changes to the data in your CoreData model once a fetch has been performed, but you still must perform the initial fetch.
+
+1. Inside your initializer, after having initialized your fetchedResultsController, you will need to call ```performFetch()``` on it.
+    * note: You will need to use the do, try, catch syntax, and should print out the error if there is one.
+
+### Basic Task List View
+
+Rebuild a view that lists all tasks. You will use a UITableViewController and implement the UITableViewDataSource functions. Apple's documentation for an NSFetchedResultsController describes exactly how to implement the UITableViewDataSource functions. However, the example is in Objective C. This will be great practice trying to understand another coding language and finding solutions using documentation. You can find the example in the section titled "Implementing the Table View Datasource Methods" in the [documentation for NSFetchedResultsController](https://developer.apple.com/library/ios/documentation/CoreData/Reference/NSFetchedResultsController_Class/index.html).
+
+You will want this view to reload the table view each time it appears in order to display newly created tasks.
+
+1. Implement the ```numberOfSectionsInTableView``` function. Remember to use documentation for help on this.
+2. Implement the ```numberOfRowsInSection``` function.
+3. Implement the ```cellForRowAtIndexPath``` function by dequeuing your cell and casting it as your custom cell, getting the right task object, and calling your custom cell's ```updateWithTask(task: Task)``` function. 
+4. Implement the ```titleForHeaderInSection``` function to return the proper section title. You may want to implement this yourself as opposed to using a built-in property of NSFetchedResultsController.
+4. Implement your ```prepareForSegue``` function to pass the selected task to the next screen if a cell was tapped.
+
+### List View Editing
+
+Add swipe-to-delete support for deleting tasks from the List View. When committing the editing style, delete the model object from the controller, then delete the cell from the table view.
+
+1. Implement the UITableViewDataSource ```commitEditingStyle``` functions to enable swipe to delete functionality.
+
+### Using the NSFetchedResultsControllerDelegate
+
+Use NSFetchedResultsControllerDelegate functions to be notified of and respond to changes in the underlying CoreData information.
+
+1. Import CoreData into the TaskListTableViewController and then add NSFetchedResultsControllerDelegate to the class signature.
+2. In ```viewDidLoad``` set the ```self``` as the delegate for the fetchedResultsController on the TaskController.
+3. Add the method signature for the delegate method ```func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?)```.
+4. This method tells you what type of change has happened, whether an object was added, deleted, moved, or updated. To be safe, we should check for the type of change and respond accordingly. This is a great situation to use a switch statement. Go ahead and add a switch statement for ```type``` with four cases, ```.Delete```, ```.Insert```, ```.Move```, and ```.Update```. 
+5. In the ```.Delete``` case, you simply need move the following line of code from your ```commitEditingStyle``` function to the ```.Delete``` case: ```tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)```. This is because when you delete an object, this delegate function will be called and that is where you will handle the deletion of the rows.
+6. In the ```.Insert``` case, you can use a similar line of code to insert a row at a given indexPath: ```tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Automatic)```.
+7. Using the two table view functions used in the previous two steps, attempt to fill in the ```.Move``` case. You will need to delete the row at the given indexPath, and insert a row at the newIndexPath.
+    * note: You might need to use ```tableView.beginUpdates()``` and ```tableView.endUpdates()```. This lets the table view know that multiple updates will be happening, and then lets the table view know when they are done.
+8. Search documentation to find a table view function that you can use to reload a row at a given index path in order to implement the ```.Update``` case.
 
 ## Contributions
 
