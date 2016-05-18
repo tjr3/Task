@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 class TaskListTableViewController: UITableViewController, NSFetchedResultsControllerDelegate, ButtonTableViewCellDelegate {
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         TaskController.sharedController.fetchedResultsController.delegate = self
@@ -38,11 +38,12 @@ class TaskListTableViewController: UITableViewController, NSFetchedResultsContro
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
-            return "Incompleted Tasks"
-        default:
-            return "Completed Tasks"
+        guard let sectionInfo = TaskController.sharedController.fetchedResultsController.sections,
+            index = Int(sectionInfo[section].name) else {return nil}
+        if index == 0 {
+            return "Incomplete Tasks"
+        } else {
+            return "Complete Tasks"
         }
     }
 
@@ -51,27 +52,46 @@ class TaskListTableViewController: UITableViewController, NSFetchedResultsContro
         if editingStyle == .Delete {
             guard let task = TaskController.sharedController.fetchedResultsController.objectAtIndexPath(indexPath) as? Task else {return}
             TaskController.sharedController.removeTask(task)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         }
     }
     
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        tableView.beginUpdates()
+    }
+    
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        guard let indexPath = indexPath else {return}
         switch type {
         case .Delete:
+            guard let indexPath = indexPath else {return}
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         case .Insert:
             guard let newIndexPath = newIndexPath else {return}
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Automatic)
         case .Move:
-            guard let newIndexPath = newIndexPath else {return}
-            tableView.beginUpdates()
+            guard let indexPath = indexPath,
+                newIndexPath = newIndexPath else {return}
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Automatic)
-            tableView.endUpdates()
         case .Update:
+            guard let indexPath = indexPath else {return}
             tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
         }
+        //tableViewUpdating = false
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        switch type {
+        case .Delete:
+            tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Automatic)
+        case .Insert:
+            tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Automatic)
+        default:
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        tableView.endUpdates()
     }
     
     func buttonCellButtonTapped(sender: ButtonTableViewCell) {

@@ -60,6 +60,7 @@ class TaskController {
     
     func isCompleteValueToggle(task: Task) {
         task.isComplete = !task.isComplete.boolValue
+        saveToPersistentStorage()
     }
     
     // MARK: - Persistence
