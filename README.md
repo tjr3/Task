@@ -298,35 +298,36 @@ An NSFetchedResultsController will keep you updated of any changes to the data i
 
 ### Basic Task List View
 
-Rebuild a view that lists all tasks. You will use a UITableViewController and implement the UITableViewDataSource functions. Apple's documentation for an NSFetchedResultsController describes exactly how to implement the UITableViewDataSource functions. However, the example is in Objective C. This will be great practice trying to understand another coding language and finding solutions using documentation. You can find the example in the section titled "Implementing the Table View Datasource Methods" in the [documentation for NSFetchedResultsController](https://developer.apple.com/library/ios/documentation/CoreData/Reference/NSFetchedResultsController_Class/index.html).
+Rebuild a view that lists all tasks. You will use a UITableViewController and implement the UITableViewDataSource functions. Apple's documentation for an NSFetchedResultsController describes exactly how to implement the UITableViewDataSource functions. There are examples in Swift beneath each Objective C example. However, note that the style differs slightly from the style you have been taught here at DevMountain. You should do your best to keep your code style consistent to what we have been learning the last weeks (i.e. safely unwrapping optionals, etc.). You can find the example needed in the section titled "Integrating the Fetched Results Controller with the Table View Data Source" in the [Core Data Programming Guide](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/nsfetchedresultscontroller.html).
 
 You will want this view to reload the table view each time it appears in order to display newly created tasks.
 
 1. Implement the ```numberOfSectionsInTableView``` function. Remember to use documentation for help on this.
 2. Implement the ```numberOfRowsInSection``` function.
 3. Implement the ```cellForRowAtIndexPath``` function by dequeuing your cell and casting it as your custom cell, getting the right task object, and calling your custom cell's ```updateWithTask(task: Task)``` function. 
-4. Implement the ```titleForHeaderInSection``` function to return the proper section title. You may want to implement this yourself as opposed to using a built-in property of NSFetchedResultsController.
+4. Implement the ```titleForHeaderInSection``` function to return the proper section title. There is no example for this in the Core Data Programming Guide. However, the array of NSFetchedResultsSectionInfo objects that you get from the Fetched Results Controller contains a name property that is a string representing the index of the section. You can cast this as an ```Int``` and use it to determine whether your header should say "Incomplete" or "Complete".
 4. Implement your ```prepareForSegue``` function to pass the selected task to the next screen if a cell was tapped.
 
 ### List View Editing
 
-Add swipe-to-delete support for deleting tasks from the List View. When committing the editing style, delete the model object from the controller, then delete the cell from the table view.
+Add swipe-to-delete support for deleting tasks from the List View. When committing the editing style, delete the model object from the controller, but do not delete the cell from the table view. We will implement an NSFetchedResultsControllerDelegate method to do this once the object is deleted.
 
 1. Implement the UITableViewDataSource ```commitEditingStyle``` functions to enable swipe to delete functionality.
 
 ### Using the NSFetchedResultsControllerDelegate
 
-Use NSFetchedResultsControllerDelegate functions to be notified of and respond to changes in the underlying CoreData information.
+Use NSFetchedResultsControllerDelegate functions to be notified of and respond to changes in the underlying CoreData information. The Core Data Programming Guide has examples of this as well in the section "Communication Data Changes to the Table View".
 
 1. Import CoreData into the TaskListTableViewController and then add NSFetchedResultsControllerDelegate to the class signature.
 2. In ```viewDidLoad``` set the ```self``` as the delegate for the fetchedResultsController on the TaskController.
-3. Add the method signature for the delegate method ```func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?)```.
-4. This method tells you what type of change has happened, whether an object was added, deleted, moved, or updated. To be safe, we should check for the type of change and respond accordingly. This is a great situation to use a switch statement. Go ahead and add a switch statement for ```type``` with four cases, ```.Delete```, ```.Insert```, ```.Move```, and ```.Update```. 
+3. Look at documentation for the NSFetchedResultsControllerDelegate. There are four methods. you will need to implement all of them, so write the function signatures for all of them.
+4. The delegate method ```func controllerWillChangeContent(controller: NSFetchedResultsController)``` will be called before any change occurs, and the delegate method ```func controllerDidChangeContent(controller: NSFetchedResultsController)``` will be called after changes occur. Sometimes there will be multiple changes that need to occur to the table view, some of which need to happen simultaneous to other changes. For this to work, the table view needs to know to execute all changes at the same time. This is done by saying ```tableView.beginUpdates()```, and then after all of the changes have been made, saying ```tableView.endUpdates()```. You should begin updates in the function that will be called before changes happen, and you should end updates in the function that will be called after changes happen.  
+4. The delegate method ```func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?)``` tells you what type of change has happened, whether an object was added, deleted, moved, or updated. To be safe, we should check for the type of change and respond accordingly. This is a great situation to use a switch statement. Go ahead and add a switch statement for ```type``` with four cases, ```.Delete```, ```.Insert```, ```.Move```, and ```.Update```. 
 5. In the ```.Delete``` case, you simply need move the following line of code from your ```commitEditingStyle``` function to the ```.Delete``` case: ```tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)```. This is because when you delete an object, this delegate function will be called and that is where you will handle the deletion of the rows.
 6. In the ```.Insert``` case, you can use a similar line of code to insert a row at a given indexPath: ```tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Automatic)```.
 7. Using the two table view functions used in the previous two steps, attempt to fill in the ```.Move``` case. You will need to delete the row at the given indexPath, and insert a row at the newIndexPath.
-    * note: You might need to use ```tableView.beginUpdates()``` and ```tableView.endUpdates()```. This lets the table view know that multiple updates will be happening, and then lets the table view know when they are done.
 8. Search documentation to find a table view function that you can use to reload a row at a given index path in order to implement the ```.Update``` case.
+9. The delegate method ```func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType)``` will be called if a section needs to be added or deleted. Again, the ```type``` variable passed into the function will tell you if a section needs to be added or deleted. Use documentation and the Core Data Programming Guide to implement this function.
 
 ## Contributions
 
