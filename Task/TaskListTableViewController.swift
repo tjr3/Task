@@ -55,6 +55,8 @@ class TaskListTableViewController: UITableViewController, NSFetchedResultsContro
         }
     }
     
+    // MARK: - NSFetchedResultsControllerDelegate
+    
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         tableView.beginUpdates()
     }
@@ -76,7 +78,6 @@ class TaskListTableViewController: UITableViewController, NSFetchedResultsContro
             guard let indexPath = indexPath else {return}
             tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
         }
-        //tableViewUpdating = false
     }
     
     func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
@@ -93,6 +94,8 @@ class TaskListTableViewController: UITableViewController, NSFetchedResultsContro
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         tableView.endUpdates()
     }
+    
+    // MARK: - ButtonTableViewCellDelegate
     
     func buttonCellButtonTapped(sender: ButtonTableViewCell) {
         guard let indexPath = tableView.indexPathForCell(sender),
