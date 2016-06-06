@@ -114,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				68D78A251BD6C26500509A87 /* AppDelegate.swift */,
+				CECCF9DF1CF63CC0003C522B /* Stack.swift */,
 				CECCF9E81CF63F38003C522B /* Model */,
 				CECCF9EB1CF647D5003C522B /* Model Controller */,
 				CECCF9DE1CF63C53003C522B /* View Controllers */,
@@ -157,7 +158,6 @@
 			isa = PBXGroup;
 			children = (
 				CECCF9E11CF63D58003C522B /* Task.xcdatamodeld */,
-				CECCF9DF1CF63CC0003C522B /* Stack.swift */,
 				CECCF9E41CF63EE8003C522B /* Task+CoreDataProperties.swift */,
 				CECCF9E51CF63EE8003C522B /* Task.swift */,
 				CECCF9EC1CF675FC003C522B /* DateFormatter.swift */,

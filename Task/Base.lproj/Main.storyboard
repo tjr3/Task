@@ -25,10 +25,17 @@
                                         <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Qlj-3h-MKa">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                             <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dFn-Wx-84F">
+                                                    <rect key="frame" x="0.0" y="0.0" width="8" height="44"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="8" id="xQZ-wu-8hM"/>
+                                                    </constraints>
+                                                </view>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kaI-I9-Bp3">
-                                                    <rect key="frame" x="0.0" y="0.0" width="556" height="44"/>
+                                                    <rect key="frame" x="8" y="0.0" width="548" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="irc-eB-GwN">
@@ -50,6 +57,7 @@
                                         </stackView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="Qlj-3h-MKa" firstAttribute="leading" secondItem="9yC-tv-4lT" secondAttribute="leading" id="83H-YE-yml"/>
                                         <constraint firstAttribute="trailing" secondItem="Qlj-3h-MKa" secondAttribute="trailing" id="gfs-C8-G8o"/>
                                         <constraint firstItem="Qlj-3h-MKa" firstAttribute="centerY" secondItem="9yC-tv-4lT" secondAttribute="centerY" id="hjG-Yq-zgk"/>
                                         <constraint firstItem="Qlj-3h-MKa" firstAttribute="top" secondItem="9yC-tv-4lT" secondAttribute="top" id="p6S-P8-ie1"/>
@@ -71,7 +79,7 @@
                     <navigationItem key="navigationItem" title="Tasks" id="BNL-vv-T1h">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="0LS-ig-yGQ">
                             <connections>
-                                <segue destination="uTK-rX-8Cv" kind="show" identifier="addNewTaskSegue" id="QNG-0X-pEM"/>
+                                <segue destination="uTK-rX-8Cv" kind="show" identifier="" id="QNG-0X-pEM"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -142,6 +150,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="4MC-OK-rdS" secondAttribute="trailing" constant="8" id="Mvn-1J-eMs"/>
                                                 <constraint firstAttribute="bottom" secondItem="4MC-OK-rdS" secondAttribute="bottom" constant="8" id="PZA-L9-eqd"/>
                                                 <constraint firstItem="4MC-OK-rdS" firstAttribute="top" secondItem="YtN-DF-peh" secondAttribute="top" constant="8" id="a7u-yk-sQl"/>
+                                                <constraint firstItem="4MC-OK-rdS" firstAttribute="leading" secondItem="YtN-DF-peh" secondAttribute="leading" constant="8" id="iSq-UD-avW"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -209,17 +218,17 @@
                 </datePicker>
                 <tapGestureRecognizer id="aVX-iz-y6N">
                     <connections>
-                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="foU-C3-6zg"/>
+                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="22Z-Oi-CU0"/>
                     </connections>
                 </tapGestureRecognizer>
                 <tapGestureRecognizer id="VgN-RW-s7M">
                     <connections>
-                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="lZj-H5-f8U"/>
+                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="V0h-Ra-qSx"/>
                     </connections>
                 </tapGestureRecognizer>
                 <tapGestureRecognizer id="YCR-5K-3vH">
                     <connections>
-                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="k1H-Yk-pg0"/>
+                        <action selector="userTappedView:" destination="uTK-rX-8Cv" id="lxB-Co-Sgx"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

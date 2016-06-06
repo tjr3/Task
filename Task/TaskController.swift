@@ -11,40 +11,21 @@ import CoreData
 
 
 class TaskController {
-    
-    
+
     // MARK: - Properties
-    
     
     static let sharedController = TaskController()
     
-    var tasksArray: [Task] = []
-    
-    var mockData: [Task] {
-        let task1 = Task(name: "Make gumbo", notes: "In the fridge door")
-        let task2 = Task(name: "Take Grandma to the shop", notes: "Dont forget to pickup medication")
-        task2.isComplete = true
-        let task3 = Task(name: "Review class notes", notes: "Chapter 4, section 2.1-2.6")
-        let task4 = Task(name: "Dave's Birthday Present", notes: "Eddie Bauer")
-        
-        return [task1, task2, task3, task4]
-    }
-    
-    
-    
-    var completedTasks: [Task] {
-        return tasksArray.filter({$0.isComplete == true})
-    }
-    
-    var incompleteTask: [Task] {
-        return tasksArray.filter({$0.isComplete == false})
-    }
+    var fetchResultsController: NSFetchedResultsController
     
     init() {
-        self.tasksArray = fetchTask()
+        let request = NSFetchRequest(entityName: "Task")
+        let sortDescriptor1 = NSSortDescriptor(key:"isComplete", ascending: false)
+        let sortDescriptor2 = NSSortDescriptor(key: "due", ascending: false)
+        request.sortDescriptors = [sortDescriptor1, sortDescriptor2]
+        fetchResultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: Stack.sharedStack.managedObjectContext, sectionNameKeyPath: "isComplete", cacheName: nil)
+        _ = try? fetchResultsController.performFetch()
     }
-    
-
     
     
     // MARK: - Methods
@@ -53,14 +34,11 @@ class TaskController {
     func addTask(name: String, notes: String?, due: NSDate?) {
         let _ = Task(name: name, notes: notes, due: due)
         saveToPersistentStorage()
-        tasksArray = fetchTask()
     }
     
     func removeTask(task: Task) {
-            task.managedObjectContext?.deleteObject(task)
-            saveToPersistentStorage()
-            tasksArray = fetchTask()
-        
+        task.managedObjectContext?.deleteObject(task)
+        saveToPersistentStorage()
     }
     
     func updateTask(task: Task, name: String, notes: String?, due: NSDate?, isComplete: Bool) {
@@ -69,7 +47,12 @@ class TaskController {
         task.due = due
         task.isComplete = isComplete
         saveToPersistentStorage()
-        tasksArray = fetchTask()
+        
+    }
+    
+    func isCompleteValueToggle(task: Task) {
+        task.isComplete = !task.isComplete.boolValue
+        saveToPersistentStorage()
     }
     
     
@@ -84,9 +67,5 @@ class TaskController {
         }
     }
     
-    func fetchTask() -> [Task] {
-        let request = NSFetchRequest(entityName: "Task")
-        let task = (try? Stack.sharedStack.managedObjectContext.executeFetchRequest(request)) as? [Task]
-        return task ?? []
-    }
 }
+

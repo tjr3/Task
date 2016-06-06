@@ -26,7 +26,9 @@ class ButtonTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     @IBAction func buttonTapped(sender: AnyObject) {
-         delegate?.buttonCellButtonTapped(self)
+        if let delegate = delegate {
+         delegate.buttonCellButtonTapped(self)
+        }
     }
     
     func updateButton(isComplete: Bool) {
@@ -42,11 +44,13 @@ class ButtonTableViewCell: UITableViewCell {
 extension ButtonTableViewCell {
     
     func updateWithTask(task: Task) {
+        
         primaryLabel.text = task.name
         updateButton(task.isComplete.boolValue)
     }
 }
 
 protocol ButtonTableViewCellDelegate {
+    
     func buttonCellButtonTapped(sender: ButtonTableViewCell)
 }

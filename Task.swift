@@ -14,7 +14,7 @@ class Task: NSManagedObject {
 
     convenience init(name: String, notes: String? = nil, due: NSDate? = nil, isComplete: Bool = false, context: NSManagedObjectContext = Stack.sharedStack.managedObjectContext) {
         
-        // there is no graceful way to respond to a failure on NSEntityDescription.entityForName, force unwrapping and forcing a crash is the desired behavior for this app
+        // there is no graceful way to respond to a failure on NSEntityDescription.entityForName, force unwrapping and forcing a crash is the desired behavior
         
         // designated initializer
         
